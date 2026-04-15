@@ -1,0 +1,36 @@
+spring:
+  # DATABASE (MYSQL)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jpas_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: jpasAdmin00!@
+  # JPA
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+# JPA QUERY LOGGING
+logging:
+  level:
+    root: info
+    org.springframework.web: debug
+    org.mybatis: debug
+    org.apache.ibatis: debug
+    com.spring.jpas: debug
+# MYBATIS
+mybatis:
+  mapper-locations: classpath:/query/**/*.xml
+  type-aliases-package: com.spring.jpas
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+# JWT
+jwt:
+  secret: my-super-secret-key-which-is-long-enough
+  accessTokenExpireMinutes: 30
