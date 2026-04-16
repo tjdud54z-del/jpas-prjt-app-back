@@ -15,4 +15,6 @@ public class CommonParams {
     private String name;
     /** 재직여부 (Y/N) */
     private String activeYn;
+    /** 입사일 **/
+    private String hireDate;
 }

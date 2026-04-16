@@ -72,6 +72,7 @@
                 E.EMPLOYEE_NO     AS EMPLOYEE_NO,
                 E.NAME 			  AS NAME,
                 E.EMAIL 	      AS EMAIL,
+                E.HIRE_DATE       AS HIRE_DATE,
                 E.DEPARTMENT_CODE AS DEPARTMENT_CODE,
                 ( SELECT C.CODE_NAME
                   FROM   JPAS_TB_CMMN_CD_DTL C
@@ -100,6 +101,9 @@
                 </if>
                 <if test='activeYn != null and activeYn != ""'>
                     AND E.ACTIVE_YN   = #{activeYn}
+                </if>
+                <if test='hireDate != null and hireDate != ""'>
+                    AND E.HIRE_DATE   = #{hireDate}
                 </if>
         ORDER BY
                 E.EMPLOYEE_NO
