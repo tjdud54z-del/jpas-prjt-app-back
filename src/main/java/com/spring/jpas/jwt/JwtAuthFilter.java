@@ -41,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             if (jwtTokenProvider.validate(token)) {
-                String employeeId = jwtTokenProvider.getEmployeeId(token);
+                String employeeId = jwtTokenProvider.getUserId(token);
 
                 // 권한은 일단 USER로 기본 세팅 (추후 role claim 넣으면 여기서 매핑)
                 var authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));

@@ -51,7 +51,7 @@ public class JwtTokenProvider {
         return accessTokenExpireMillis / 1000;
     }
 
-    public String getEmployeeId(String token) {
+    public String getUserId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

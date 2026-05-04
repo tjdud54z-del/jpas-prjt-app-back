@@ -3,10 +3,9 @@
 package com.spring.jpas.jwt;
 
 
-import com.spring.jpas.jpa.entity.Employee;
-import com.spring.jpas.jpa.repository.EmployeeRepository;
+import com.spring.jpas.domain.employee.command.domain.Employee;
+import com.spring.jpas.domain.employee.command.infra.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,29 +19,35 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public LoginResponse login(String employeeNo, String password) {
-
-        Employee emp = employeeRepository.findByEmployeeNo(employeeNo)
+        
+        String logMessage = "";
+        
+        Employee emp = employeeRepository.findByUserNo(employeeNo)
                 .orElseThrow(() -> new IllegalArgumentException("계정이 존재하지 않습니다."));
 
         // 퇴사자 차단 (강력 추천)
         if (!"Y".equals(emp.getActiveYn())) {
+            logMessage = "퇴사자입니다.";
             throw new IllegalArgumentException("퇴사자입니다.");
         }
 
         if (!passwordEncoder.matches(password, emp.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 틀립니다.");
+            logMessage = "계정이나 비밀번호가 틀립니다.";
+            throw new IllegalArgumentException("계정이나 비밀번호가 틀립니다.");
+            
         }
 
         String token = jwtTokenProvider.createAccessToken(employeeNo);
 
         UserInfoDto userInfoDto = new UserInfoDto(
-                emp.getEmployeeId(),
-                emp.getEmployeeNo(),
+                emp.getUserId(),
+                emp.getUserNo(),
                 emp.getName(),
                 emp.getEmail(),
                 emp.getDepartmentCode(),
                 emp.getPositionCode(),
-                emp.getActiveYn()
+                emp.getActiveYn(),
+                logMessage
         );
 
         return new LoginResponse(

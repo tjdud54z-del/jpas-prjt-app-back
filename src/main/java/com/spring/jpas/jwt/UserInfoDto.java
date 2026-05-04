@@ -7,11 +7,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserInfoDto {
-    private Long employeeId;
-    private String employeeNo;
+    private Long userId;
+    private String userNo;
     private String name;
     private String email;
     private String departmentCode;
     private String positionCode;
     private String activeYn;
+    private String logMessage;
 }

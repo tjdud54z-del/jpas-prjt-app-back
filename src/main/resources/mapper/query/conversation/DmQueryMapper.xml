@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.jpas.domain.conversation.query.infra.DmQueryMapper">
+
+    <!-- =========================================================
+         (R) 대화 목록(inbox)
+         - 피어(employeeId) + 마지막 메시지 + 안읽음(unreadCount) 한번에 조회
+         - 커서 페이징: (last_message_at desc, conversation_id desc)
+         ========================================================= -->
+    <select id="selectDmConversations" resultType="com.spring.jpas.domain.conversation.query.dto.DmConversationListItem">
+
+        SELECT      c.CONVERSATION_ID              AS conversationId,
+                    op.USER_ID                     AS peerUserId,
+                    uinfo.USER_NO                  AS peerUserNo,
+                    uinfo.NAME                     AS peerUserName,
+                    c.LAST_MESSAGE_ID              AS lastMessageId,
+                    c.LAST_MESSAGE_AT              AS lastMessageAt,
+                    lm.BODY                        AS lastMessage,
+                    lm.SENDER_ID                   AS lastSenderId,
+                    COALESCE(u.unread_count, 0)    AS unreadCount
+        FROM        DM_PARTICIPANTS p
+        JOIN        DM_CONVERSATIONS c ON c.CONVERSATION_ID = p.CONVERSATION_ID
+        -- 같은 대화방의 상대방
+        JOIN        DM_PARTICIPANTS op ON op.CONVERSATION_ID = p.CONVERSATION_ID AND op.USER_ID <![CDATA[<>]]> p.USER_ID
+        -- 상대방 사용자 정보
+        JOIN        JPAS_DB.JPAS_TB_USER uinfo ON uinfo.USER_ID = op.USER_ID
+        -- 마지막 메시지
+        LEFT JOIN   DM_MESSAGES lm ON lm.MESSAGE_ID = c.LAST_MESSAGE_ID
+        -- unreadCount (DM_MESSAGE_READS 기준)
+        LEFT JOIN (
+                    SELECT      m.CONVERSATION_ID,
+                                COUNT(*) AS unread_count
+                    FROM        DM_MESSAGES m
+                    LEFT JOIN   DM_MESSAGE_READS r ON r.MESSAGE_ID = m.MESSAGE_ID
+                    AND         r.USER_ID = #{userId}
+                    WHERE       m.SENDER_ID <![CDATA[<>]]> #{userId}
+                                AND r.MESSAGE_ID IS NULL   -- 읽지 않은 메시지
+                    GROUP BY    m.CONVERSATION_ID
+            ) u
+        ON u.CONVERSATION_ID = p.CONVERSATION_ID
+        WHERE p.USER_ID = #{userId}
+        <!-- 커서 페이징 -->
+        <if test="cursorAt != null and cursorId != null">
+            AND (c.LAST_MESSAGE_AT <![CDATA[<]]> #{cursorAt}
+                OR
+                (c.LAST_MESSAGE_AT = #{cursorAt} AND c.CONVERSATION_ID <![CDATA[<]]> #{cursorId}))
+        </if>
+        ORDER BY    c.LAST_MESSAGE_AT DESC,
+                    c.CONVERSATION_ID DESC
+        LIMIT       #{size}
+    </select>
+
+
+    <!-- =========================================================
+         (R) 메시지 히스토리
+         - 커서 페이징: message_id desc
+         - cursorMessageId가 있으면 그 이전 것만 더 가져옴
+         ========================================================= -->
+    <select id="selectDmMessages"
+            resultType="com.spring.jpas.domain.conversation.query.dto.DmMessageRow">
+        SELECT
+                m.message_id          AS messageId,
+                m.conversation_id     AS conversationId,
+                m.SENDER_ID           AS senderUserId,
+                uinfo.USER_NO         AS senderUserNo,
+                uinfo.NAME            AS senderUserNm,
+                m.body                AS body,
+                m.sent_at             AS sentAt
+        FROM    dm_messages m
+        JOIN    JPAS_DB.JPAS_TB_USER uinfo ON uinfo.USER_ID = m.SENDER_ID
+        WHERE   m.conversation_id = #{conversationId}
+        <if test="cursorMessageId != null">
+            AND m.message_id &lt; #{cursorMessageId}
+        </if>
+        ORDER BY
+                m.message_id DESC
+        LIMIT
+                #{size}
+    </select>
+
+</mapper>

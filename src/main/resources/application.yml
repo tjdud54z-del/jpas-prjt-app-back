@@ -6,6 +6,15 @@ spring:
     username: root
     password: jpasAdmin00!@
   # JPA
+#  jpa:
+#    open-in-view: false
+#    hibernate:
+#      ddl-auto: validate
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        show_sql: true
+#        dialect: org.hibernate.dialect.MySQLDialect
   jpa:
     open-in-view: false
     hibernate:
@@ -13,20 +22,23 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 # JPA QUERY LOGGING
 logging:
   level:
     root: info
     org.springframework.web: debug
-    org.mybatis: debug
-    org.apache.ibatis: debug
-    com.spring.jpas: debug
+    org.mybatis: info
+    org.apache.ibatis: info
+    com.spring.jpas: info
 # MYBATIS
+#mybatis:
+#  mapper-locations: classpath:/query/**/*.xml
+#  type-aliases-package: com.spring.jpas
+#  configuration:
+#    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 mybatis:
-  mapper-locations: classpath:/query/**/*.xml
-  type-aliases-package: com.spring.jpas
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl

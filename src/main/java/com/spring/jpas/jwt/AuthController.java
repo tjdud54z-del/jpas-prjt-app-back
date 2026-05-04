@@ -22,7 +22,7 @@ public class AuthController {
             @RequestBody LoginRequest request) {
 
         LoginResponse response =
-                authService.login(request.getEmployeeNo(), request.getPassword());
+                authService.login(request.getUserNo(), request.getPassword());
 
         return ResponseEntity.ok(response);
     }
