@@ -1,4 +1,4 @@
-package com.spring.jpas.domain.employee.command.dto;
+package com.spring.jpas.domain.user.command.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,12 +7,12 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class EmployeeDto {
+public class UserDto {
     private String userNo;
     private String password;
     private String name;
     private String email;
-    private String departmentCode;
-    private String positionCode;
-    private LocalDate hireDate;
+    private String addressMain;
+    private String addressSub;
+    private LocalDate brithDate;
 }

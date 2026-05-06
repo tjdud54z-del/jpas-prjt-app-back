@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "dm_participants")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class DmParticipant {
 
     @EmbeddedId
@@ -49,14 +49,26 @@ public class DmParticipant {
         return p;
     }
 
+
+    public static DmParticipant create(Long conversationId, Long userId) {
+        DmParticipant p = new DmParticipant();
+        p.id = new DmParticipantId(conversationId, userId);
+        p.lastReadMessageId = 0L;
+        return p;
+    }
+
+
     /* ===========================
        도메인 행위
      =========================== */
 
     /** 읽음 처리 */
-    public void markRead(Long lastReadMessageId) {
-        this.lastReadMessageId = lastReadMessageId;
+    public void markRead(Long messageId) {
+        if (lastReadMessageId == null || messageId > lastReadMessageId) {
+            this.lastReadMessageId = messageId;
+        }
     }
+
 
     /** 음소거 */
     public void mute() {

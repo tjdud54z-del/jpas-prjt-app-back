@@ -1,8 +1,8 @@
-package com.spring.jpas.domain.employee.query.application;
+package com.spring.jpas.domain.user.query.application;
 
-import com.spring.jpas.domain.employee.query.dto.EmployeeDto;
+import com.spring.jpas.domain.user.query.dto.UserDto;
 import com.spring.jpas.global.common.CommonParams;
-import com.spring.jpas.domain.employee.query.infra.EmployeeQueryMapper;
+import com.spring.jpas.domain.user.query.infra.UserQueryMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,38 +16,38 @@ import java.util.List;
  */
 @Service
 @Transactional(readOnly = true)
-public class EmployeeQueryService {
+public class UserQueryService {
 
-    private final EmployeeQueryMapper mapper;
+    private final UserQueryMapper mapper;
 
-    public EmployeeQueryService(EmployeeQueryMapper mapper) {
+    public UserQueryService(UserQueryMapper mapper) {
         this.mapper = mapper;
     }
 
     /**
      * 직원의 정보를 전체조회하는 메서드
-     * @return List<EmployeeQueryDto>
+     * @return List<UserDto>
      */
-    public List<EmployeeDto> findAll() {
+    public List<UserDto> findAll() {
         return mapper.findAll();
     }
 
     /**
      * 직원의 정보를 직원아이디로 조회하는 메서드
      * @param id string 직원아이디
-     * @return EmployeeQueryDto
+     * @return UserDto
      */
-    public EmployeeDto findById(Long id) {
+    public UserDto findById(Long id) {
         return mapper.findById(id);
     }
 
     /**
      * 직원의 정보를 검색조건에 따라 조회하는 메서드
      * @param commonParams dto 공통파라미터
-     * @return List<EmployeeQueryDto>
+     * @return List<UserDto>
      */
-    public List<EmployeeDto> searchEmployees(CommonParams commonParams) {
-        return mapper.searchEmployees(commonParams);
+    public List<UserDto> searchUsers(CommonParams commonParams) {
+        return mapper.searchUsers(commonParams);
     }
 
 }

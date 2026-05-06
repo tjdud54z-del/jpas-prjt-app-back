@@ -11,46 +11,59 @@
          - 커서 페이징: (last_message_at desc, conversation_id desc)
          ========================================================= -->
     <select id="selectDmConversations" resultType="com.spring.jpas.domain.conversation.query.dto.DmConversationListItem">
-
-        SELECT      c.CONVERSATION_ID              AS conversationId,
-                    op.USER_ID                     AS peerUserId,
-                    uinfo.USER_NO                  AS peerUserNo,
-                    uinfo.NAME                     AS peerUserName,
-                    c.LAST_MESSAGE_ID              AS lastMessageId,
-                    c.LAST_MESSAGE_AT              AS lastMessageAt,
-                    lm.BODY                        AS lastMessage,
-                    lm.SENDER_ID                   AS lastSenderId,
-                    COALESCE(u.unread_count, 0)    AS unreadCount
-        FROM        DM_PARTICIPANTS p
-        JOIN        DM_CONVERSATIONS c ON c.CONVERSATION_ID = p.CONVERSATION_ID
+        SELECT
+            c.CONVERSATION_ID            AS conversationId,
+            op.USER_ID                   AS peerUserId,
+            uinfo.USER_NO                AS peerUserNo,
+            uinfo.NAME                   AS peerUserName,
+            c.LAST_MESSAGE_ID            AS lastMessageId,
+            c.LAST_MESSAGE_AT            AS lastMessageAt,
+            lm.BODY                      AS lastMessage,
+            lm.SENDER_ID                 AS lastSenderId,
+            COALESCE(u.unread_count, 0)  AS unreadCount
+        FROM DM_PARTICIPANTS p
+        JOIN DM_CONVERSATIONS c
+          ON c.CONVERSATION_ID = p.CONVERSATION_ID
         -- 같은 대화방의 상대방
-        JOIN        DM_PARTICIPANTS op ON op.CONVERSATION_ID = p.CONVERSATION_ID AND op.USER_ID <![CDATA[<>]]> p.USER_ID
+        JOIN DM_PARTICIPANTS op
+          ON op.CONVERSATION_ID = p.CONVERSATION_ID
+         AND op.USER_ID <![CDATA[<>]]> p.USER_ID
         -- 상대방 사용자 정보
-        JOIN        JPAS_DB.JPAS_TB_USER uinfo ON uinfo.USER_ID = op.USER_ID
+        JOIN JPAS_DB.JPAS_TB_USER uinfo
+          ON uinfo.USER_ID = op.USER_ID
         -- 마지막 메시지
-        LEFT JOIN   DM_MESSAGES lm ON lm.MESSAGE_ID = c.LAST_MESSAGE_ID
-        -- unreadCount (DM_MESSAGE_READS 기준)
+        LEFT JOIN DM_MESSAGES lm
+          ON lm.MESSAGE_ID = c.LAST_MESSAGE_ID
+        -- unreadCount (LAST_READ_MESSAGE_ID 기준)
         LEFT JOIN (
-                    SELECT      m.CONVERSATION_ID,
-                                COUNT(*) AS unread_count
-                    FROM        DM_MESSAGES m
-                    LEFT JOIN   DM_MESSAGE_READS r ON r.MESSAGE_ID = m.MESSAGE_ID
-                    AND         r.USER_ID = #{userId}
-                    WHERE       m.SENDER_ID <![CDATA[<>]]> #{userId}
-                                AND r.MESSAGE_ID IS NULL   -- 읽지 않은 메시지
-                    GROUP BY    m.CONVERSATION_ID
-            ) u
-        ON u.CONVERSATION_ID = p.CONVERSATION_ID
+            SELECT
+                m.CONVERSATION_ID,
+                COUNT(*) AS unread_count
+            FROM DM_MESSAGES m
+            JOIN DM_PARTICIPANTS p2
+              ON p2.CONVERSATION_ID = m.CONVERSATION_ID
+             AND p2.USER_ID = #{userId}
+            WHERE m.SENDER_ID <![CDATA[<>]]> #{userId}
+              AND m.DELETED_AT IS NULL
+              AND m.MESSAGE_ID > COALESCE(p2.LAST_READ_MESSAGE_ID, 0)
+            GROUP BY m.CONVERSATION_ID
+        ) u
+          ON u.CONVERSATION_ID = p.CONVERSATION_ID
         WHERE p.USER_ID = #{userId}
         <!-- 커서 페이징 -->
         <if test="cursorAt != null and cursorId != null">
-            AND (c.LAST_MESSAGE_AT <![CDATA[<]]> #{cursorAt}
-                OR
-                (c.LAST_MESSAGE_AT = #{cursorAt} AND c.CONVERSATION_ID <![CDATA[<]]> #{cursorId}))
+            AND (
+                c.LAST_MESSAGE_AT <![CDATA[<]]> #{cursorAt}
+                OR (
+                    c.LAST_MESSAGE_AT = #{cursorAt}
+                    AND c.CONVERSATION_ID <![CDATA[<]]> #{cursorId}
+                )
+            )
         </if>
-        ORDER BY    c.LAST_MESSAGE_AT DESC,
-                    c.CONVERSATION_ID DESC
-        LIMIT       #{size}
+        ORDER BY
+            c.LAST_MESSAGE_AT DESC,
+            c.CONVERSATION_ID DESC
+        LIMIT #{size}
     </select>
 
 

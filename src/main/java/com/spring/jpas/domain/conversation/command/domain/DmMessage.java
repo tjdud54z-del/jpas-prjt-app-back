@@ -71,13 +71,14 @@ public class DmMessage {
     /* ===========================
        팩토리 메서드
      =========================== */
-    public static DmMessage create(
-            Long conversationId,
-            Long senderId,
-            String body,
-            String msgType
-    ) {
-        return new DmMessage(conversationId, senderId, body, msgType);
+    public static DmMessage create(Long conversationId, Long senderId, String body, String msgType) {
+        DmMessage m = new DmMessage();
+        m.conversationId = conversationId;
+        m.senderId = senderId;
+        m.body = body;
+        m.msgType = msgType;
+        m.sentAt = LocalDateTime.now();
+        return m;
     }
 
     /* ===========================

@@ -8,18 +8,20 @@ import com.spring.jpas.domain.conversation.command.infra.DmConversationRepositor
 import com.spring.jpas.domain.conversation.command.infra.DmMessageRepository;
 import com.spring.jpas.domain.conversation.command.infra.DmParticipantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DmCommandService {
 
-    private final DmConversationRepository conversationRepo;
-    private final DmParticipantRepository participantRepo;
-    private final DmMessageRepository messageRepo;
+    private final DmConversationRepository conversationRepository;
+    private final DmParticipantRepository participantRepository;
+    private final DmMessageRepository messageRepository;
 
     /** (C) DM 대화방 생성 or 조회 (pairKey UNIQUE로 중복 방지) */
     @Transactional
@@ -28,19 +30,19 @@ public class DmCommandService {
         long max = Math.max(meEmployeeId, peerEmployeeId);
         String pairKey = min + "_" + max;
 
-        DmConversation conv = conversationRepo.findByPairKey(pairKey)
+        DmConversation conv = conversationRepository.findByPairKey(pairKey)
                 .orElseGet(() -> {
                     DmConversation c = new DmConversation();
                     c.setPairKey(pairKey);
-                    DmConversation saved = conversationRepo.save(c);
+                    DmConversation saved = conversationRepository.save(c);
 
-                    participantRepo.save(DmParticipant.of(saved.getConversationId(), meEmployeeId));
-                    participantRepo.save(DmParticipant.of(saved.getConversationId(), peerEmployeeId));
+                    participantRepository.save(DmParticipant.of(saved.getId(), meEmployeeId));
+                    participantRepository.save(DmParticipant.of(saved.getId(), peerEmployeeId));
 
                     return saved;
                 });
 
-        return conv.getConversationId();
+        return conv.getId();
     }
 
     /** (C) 메시지 저장 + 대화방 last_message 갱신 */
@@ -54,22 +56,99 @@ public class DmCommandService {
                 m
         );
 
-        DmMessage saved = messageRepo.save(message);
+        DmMessage saved = messageRepository.save(message);
 
         // last_message 업데이트
-        DmConversation c = conversationRepo.findById(conversationId).orElseThrow();
+        DmConversation c = conversationRepository.findById(conversationId).orElseThrow();
         c.setLastMessageId(saved.getMessageId());
         c.setLastMessageAt(saved.getSentAt());
 
         return saved;
     }
 
+    /** 메세지 전송 */
+    public DmMessage send(Long senderId, Long receiverId, String body, String msgType) {
+
+        // 1️⃣ pairKey 계산 (MINID_MAXID)
+        String pairKey = generatePairKey(senderId, receiverId);
+
+        // 2️⃣ 대화방 조회 or 생성
+        DmConversation conversation = conversationRepository
+                .findByPairKey(pairKey)
+                .orElseGet(() -> conversationRepository.save(
+                        DmConversation.create(pairKey)
+                ));
+
+        Long conversationId = conversation.getId();
+
+        // 3️⃣ participants 보장 (sender / receiver)
+        ensureParticipant(conversationId, senderId);
+        ensureParticipant(conversationId, receiverId);
+
+        // 4️⃣ 메시지 저장
+        DmMessage message = DmMessage.create(
+                conversationId,
+                senderId,
+                body,
+                msgType
+        );
+        messageRepository.save(message);
+
+        // 5️⃣ 대화방 마지막 메시지 갱신
+        conversation.updateLastMessage(message.getMessageId(), message.getSentAt());
+        conversationRepository.save(conversation);
+        conversationRepository.flush();
+
+        // 6️⃣ 보낸 사람은 바로 읽음 처리
+        DmParticipant senderParticipant =
+                participantRepository.findById(
+                        new DmParticipantId(conversationId, senderId)
+                ).orElseThrow();
+
+        senderParticipant.markRead(message.getMessageId());
+
+        return message;
+    }
+
+    private void ensureParticipant(Long conversationId, Long userId) {
+        DmParticipantId id = new DmParticipantId(conversationId, userId);
+        if (!participantRepository.existsById(id)) {
+            participantRepository.save(DmParticipant.create(conversationId, userId));
+        }
+    }
+
+    private String generatePairKey(Long a, Long b) {
+        return (a < b) ? a + "_" + b : b + "_" + a;
+    }
+
+
     /** (U) 읽음 처리(업데이트) -> JPA(Command) */
     @Transactional
-    public void markRead(Long conversationId, Long employeeId, Long lastReadMessageId) {
-        DmParticipantId id = new DmParticipantId(conversationId, employeeId);
-        DmParticipant p = participantRepo.findById(id).orElseThrow();
-        p.markRead(lastReadMessageId);
+
+    public void markConversationRead(Long conversationId, Long userId) {
+        // 참여자 조회
+        DmParticipant participant = participantRepository.findById(
+                new DmParticipantId(conversationId, userId)
+        ).orElseThrow(() ->
+                new IllegalStateException("대화방 참여자가 아닙니다.")
+        );
+
+        // 최신 메시지 ID 조회
+        Long lastMessageId = participantRepository
+                .findLastMessageId(conversationId)
+                .orElse(0L);
+
+        log.info("읽음 처리 전 lastRead={}", participant.getLastReadMessageId());
+        log.info("최신 메시지 ID={}", lastMessageId);
+
+        // 읽음 처리
+        participant.markRead(lastMessageId);
+
+        log.info("읽음 처리 후 lastRead={}", participant.getLastReadMessageId());
+
+        // save (JPA 변경 감지)
+        // participantRepository.save(participant); ← 없어도 됨
     }
+
 
 }

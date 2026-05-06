@@ -1,5 +1,5 @@
 
-package com.spring.jpas.domain.employee.command.domain;
+package com.spring.jpas.domain.user.command.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "JPAS_TB_USER")
 @Getter
 @NoArgsConstructor
-public class Employee {
+public class User {
 
     /** 직원 PK */
     @Id
@@ -38,16 +38,16 @@ public class Employee {
     private String email;
 
     /** 부서코드 */
-    @Column(name = "DEPARTMENT_CODE", length = 50, nullable = false)
-    private String departmentCode;
+    @Column(name = "ADDRESS_MAIN", length = 1000, nullable = false)
+    private String addressMain;
 
     /** 직급코드 */
-    @Column(name = "POSITION_CODE", length = 50, nullable = false)
-    private String positionCode;
+    @Column(name = "ADDRESS_SUB", length = 1000, nullable = false)
+    private String addressSub;
 
     /** 입사일 */
-    @Column(name = "HIRE_DATE", nullable = false)
-    private LocalDate hireDate;
+    @Column(name = "BIRTH_DATE", nullable = false)
+    private LocalDate birthDate;
 
     /** 재직 여부 */
     @Column(name = "ACTIVE_YN", length = 1, nullable = false)
@@ -79,36 +79,36 @@ public class Employee {
     /* ===========================
        생성자 (등록용)
      =========================== */
-    public Employee(
+    public User(
             String userNo,
             String password,
             String name,
             String email,
-            String departmentCode,
-            String positionCode,
-            LocalDate hireDate
+            String addressMain,
+            String addressSub,
+            LocalDate birthDate
     ) {
         this.userNo = userNo;
         this.password = password;
         this.name = name;
         this.email = email;
-        this.departmentCode = departmentCode;
-        this.positionCode = positionCode;
-        this.hireDate = hireDate;
+        this.addressMain = addressMain;
+        this.addressSub = addressSub;
+        this.birthDate = birthDate;
     }
 
 
     /* create 팩토리 */
-    public static Employee create(
+    public static User create(
             String userNo,
             String password,
             String name,
             String email,
-            String departmentCode,
-            String positionCode,
-            LocalDate hireDate
+            String addressMain,
+            String addressSub,
+            LocalDate birthDate
     ) {
-        return new Employee(userNo, password, name, email, departmentCode, positionCode, hireDate);
+        return new User(userNo, password, name, email, addressMain, addressSub, birthDate);
     }
 
     /* update 도메인 메서드 */
@@ -116,16 +116,16 @@ public class Employee {
             String password,
             String name,
             String email,
-            String departmentCode,
-            String positionCode,
-            LocalDate hireDate
+            String addressMain,
+            String addressSub,
+            LocalDate birthDate
     ) {
         this.password = password;
         this.name = name;
         this.email = email;
-        this.departmentCode = departmentCode;
-        this.positionCode = positionCode;
-        this.hireDate = hireDate;
+        this.addressMain = addressMain;
+        this.addressSub = addressSub;
+        this.birthDate = birthDate;
     }
 
 

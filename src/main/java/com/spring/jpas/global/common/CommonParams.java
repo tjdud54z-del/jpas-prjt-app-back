@@ -20,15 +20,15 @@ public class CommonParams {
 
     private Long employeeId; // 직원번호(PK)
     private String employeeNo; // 사번
-    private Long userId;
-    private String userNo;
+    private Long userId; // 유저PK
+    private String userNo; // 유저ID
     private String password; // 비밀번호
     private String name; // 이름
     private String email; // 이메일
-    private String departmentCode; // 부서코드
-    private String positionCode; // 직급코드
-    private String hireDate; // 입사일
-    private String activeYn; // 재직여부(Y/N)
+    private String addressMain; // 메인주소
+    private String addressSub; // 상세주소
+    private String birthDate; // 생년월일
+    private String activeYn; // 탈퇴여부(Y/N)
 
     /*
     * =========================

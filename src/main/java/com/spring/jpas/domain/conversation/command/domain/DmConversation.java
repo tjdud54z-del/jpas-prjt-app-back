@@ -13,22 +13,31 @@ import java.time.LocalDateTime;
 @Setter
 public class DmConversation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "conversation_id")
-    private Long conversationId;
 
-    @Column(name = "pair_key", nullable = false, unique = true)
+@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CONVERSATION_ID")
+    private Long id;
+
+    @Column(name = "PAIR_KEY", nullable = false, unique = true)
     private String pairKey;
 
-    @Column(name = "last_message_id")
+    @Column(name = "LAST_MESSAGE_ID")
     private Long lastMessageId;
 
-    @Column(name = "last_message_at")
+    @Column(name = "LAST_MESSAGE_AT")
     private LocalDateTime lastMessageAt;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    public static DmConversation create(String pairKey) {
+        DmConversation c = new DmConversation();
+        c.pairKey = pairKey;
+        return c;
+    }
+
+    public void updateLastMessage(Long messageId, LocalDateTime sentAt) {
+        this.lastMessageId = messageId;
+        this.lastMessageAt = sentAt;
+    }
 
 }
 
