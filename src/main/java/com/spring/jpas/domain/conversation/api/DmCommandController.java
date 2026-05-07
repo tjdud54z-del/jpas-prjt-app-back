@@ -82,6 +82,7 @@ public class DmCommandController {
                      @RequestBody Map<String, Long> body) {
         Long userId = body.get("userId"); // 로그인 사용자
         commandService.markConversationRead(conversationId, userId);
+        // commandService.markConversationReadAndBroadcast(conversationId, userId);
     }
 
 

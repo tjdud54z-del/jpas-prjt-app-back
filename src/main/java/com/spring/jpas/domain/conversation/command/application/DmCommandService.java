@@ -4,11 +4,13 @@ import com.spring.jpas.domain.conversation.command.domain.DmConversation;
 import com.spring.jpas.domain.conversation.command.domain.DmMessage;
 import com.spring.jpas.domain.conversation.command.domain.DmParticipant;
 import com.spring.jpas.domain.conversation.command.domain.DmParticipantId;
+import com.spring.jpas.domain.conversation.command.dto.DmReadEventDto;
 import com.spring.jpas.domain.conversation.command.infra.DmConversationRepository;
 import com.spring.jpas.domain.conversation.command.infra.DmMessageRepository;
 import com.spring.jpas.domain.conversation.command.infra.DmParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class DmCommandService {
     private final DmConversationRepository conversationRepository;
     private final DmParticipantRepository participantRepository;
     private final DmMessageRepository messageRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /** (C) DM 대화방 생성 or 조회 (pairKey UNIQUE로 중복 방지) */
     @Transactional
@@ -124,7 +127,6 @@ public class DmCommandService {
 
     /** (U) 읽음 처리(업데이트) -> JPA(Command) */
     @Transactional
-
     public void markConversationRead(Long conversationId, Long userId) {
         // 참여자 조회
         DmParticipant participant = participantRepository.findById(
@@ -149,6 +151,35 @@ public class DmCommandService {
         // save (JPA 변경 감지)
         // participantRepository.save(participant); ← 없어도 됨
     }
+
+
+    /** ✅ 읽음 처리 + 실시간 브로드캐스트 */
+    @Transactional
+    public void markConversationReadAndBroadcast(Long conversationId, Long userId) {
+
+        // 1) 최신 메시지 ID
+        Long lastMessageId = messageRepository.findLastMessageId(conversationId);
+        if (lastMessageId == null) lastMessageId = 0L;
+
+        // 2) DB: 내 last_read 갱신
+        participantRepository.updateLastReadMessageId(
+                conversationId,
+                userId,
+                lastMessageId
+        );
+
+        log.info("✅ READ: conversationId={}, userId={}, lastRead={}",conversationId, userId, lastMessageId);
+
+        // 3) ✅ WebSocket으로 상대에게 알림
+        messagingTemplate.convertAndSend(
+                "/topic/dm/read/" + conversationId,
+                new DmReadEventDto(conversationId, userId, lastMessageId)
+        );
+
+        log.info("✅ READ EVENT SENT");
+
+    }
+
 
 
 }

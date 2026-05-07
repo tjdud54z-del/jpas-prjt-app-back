@@ -23,7 +23,13 @@ public class DmQueryService {
     }
 
     @Transactional(readOnly = true)
-    public List<DmMessageRow> getMessages(String userId, Long conversationId, int size, Long cursorMessageId) {
-        return mapper.selectDmMessages(userId, conversationId, size, cursorMessageId);
+    public List<DmMessageRow> getMessages(Long userId, String userNo, Long conversationId, int size, Long cursorMessageId) {
+        return mapper.selectDmMessages(userId, userNo, conversationId, size, cursorMessageId);
     }
+
+    @Transactional(readOnly = true)
+    public Long getPeerLastReadMessageId(Long userId, Long conversationId) {
+        return mapper.selectDmLastReadMessageId(userId, conversationId);
+    }
+
 }

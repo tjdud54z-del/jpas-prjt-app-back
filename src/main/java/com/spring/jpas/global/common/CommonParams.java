@@ -1,15 +1,15 @@
 package com.spring.jpas.global.common;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class CommonParams {
    /*
@@ -29,6 +29,10 @@ public class CommonParams {
     private String addressSub; // 상세주소
     private String birthDate; // 생년월일
     private String activeYn; // 탈퇴여부(Y/N)
+
+    private Long conversationId;
+    private Integer size;
+    private Long cursorMessageId;
 
     /*
     * =========================

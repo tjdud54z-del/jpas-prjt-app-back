@@ -94,4 +94,16 @@
                 #{size}
     </select>
 
+    <!-- =========================================================
+         (R) 메시지 히스토리
+         - 상대방의 마지막 읽은 메시지 ID
+         ========================================================= -->
+    <select id="selectDmLastReadMessageId" resultType="java.lang.Long">
+        SELECT  last_read_message_id
+        FROM    dm_participants
+        WHERE   1=1
+                AND conversation_id = #{conversationId}
+                AND user_id != #{userId}
+    </select>
+
 </mapper>

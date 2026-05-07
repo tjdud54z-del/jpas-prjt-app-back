@@ -27,4 +27,9 @@ public class DmDto {
     private String body;       // 메시지 내용
     private String msgType;    // TEXT / IMAGE ...
 
+
+    private Long readerId;          // 누가 읽었는지
+    private Long lastReadMessageId; // 어디까지 읽었는지
+
+
 }
