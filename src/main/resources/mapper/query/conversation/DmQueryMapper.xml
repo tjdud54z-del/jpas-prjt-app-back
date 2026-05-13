@@ -21,26 +21,26 @@
             lm.BODY                      AS lastMessage,
             lm.SENDER_ID                 AS lastSenderId,
             COALESCE(u.unread_count, 0)  AS unreadCount
-        FROM DM_PARTICIPANTS p
-        JOIN DM_CONVERSATIONS c
+        FROM JPAS_TB_DM_PARTICIPANTS p
+        JOIN JPAS_TB_DM_CONVERSATIONS c
           ON c.CONVERSATION_ID = p.CONVERSATION_ID
         -- 같은 대화방의 상대방
-        JOIN DM_PARTICIPANTS op
+        JOIN JPAS_TB_DM_PARTICIPANTS op
           ON op.CONVERSATION_ID = p.CONVERSATION_ID
          AND op.USER_ID <![CDATA[<>]]> p.USER_ID
         -- 상대방 사용자 정보
         JOIN JPAS_DB.JPAS_TB_USER uinfo
           ON uinfo.USER_ID = op.USER_ID
         -- 마지막 메시지
-        LEFT JOIN DM_MESSAGES lm
+        LEFT JOIN JPAS_TB_DM_MESSAGES lm
           ON lm.MESSAGE_ID = c.LAST_MESSAGE_ID
         -- unreadCount (LAST_READ_MESSAGE_ID 기준)
         LEFT JOIN (
             SELECT
                 m.CONVERSATION_ID,
                 COUNT(*) AS unread_count
-            FROM DM_MESSAGES m
-            JOIN DM_PARTICIPANTS p2
+            FROM JPAS_TB_DM_MESSAGES m
+            JOIN JPAS_TB_DM_PARTICIPANTS p2
               ON p2.CONVERSATION_ID = m.CONVERSATION_ID
              AND p2.USER_ID = #{userId}
             WHERE m.SENDER_ID <![CDATA[<>]]> #{userId}
@@ -82,7 +82,7 @@
                 uinfo.NAME            AS senderUserNm,
                 m.body                AS body,
                 m.sent_at             AS sentAt
-        FROM    dm_messages m
+        FROM    JPAS_TB_DM_MESSAGES m
         JOIN    JPAS_DB.JPAS_TB_USER uinfo ON uinfo.USER_ID = m.SENDER_ID
         WHERE   m.conversation_id = #{conversationId}
         <if test="cursorMessageId != null">
@@ -100,7 +100,7 @@
          ========================================================= -->
     <select id="selectDmLastReadMessageId" resultType="java.lang.Long">
         SELECT  last_read_message_id
-        FROM    dm_participants
+        FROM    JPAS_TB_DM_PARTICIPANTS
         WHERE   1=1
                 AND conversation_id = #{conversationId}
                 AND user_id != #{userId}

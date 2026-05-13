@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "DM_MESSAGES")
+@Table(name = "jpas_tb_dm_messages")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DmMessage {
