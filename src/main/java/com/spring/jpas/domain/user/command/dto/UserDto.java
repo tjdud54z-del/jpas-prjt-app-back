@@ -15,4 +15,6 @@ public class UserDto {
     private String addressMain;
     private String addressSub;
     private LocalDate brithDate;
+    private String genderFlag;
+    private String phoneNumber;
 }

@@ -9,45 +9,45 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 직원정보에 대한 서비스 및 로직을 정의하는 클래스
+ * 직원정보 서비스 및 로직을 정의하는 클래스
  * @author 정서영
- * @since 2025-04-10
+ * @since 2026-04-10
  * @version 1.0
  */
 @Service
 @Transactional(readOnly = true)
 public class UserQueryService {
 
-    private final UserQueryMapper mapper;
-
-    public UserQueryService(UserQueryMapper mapper) {
-        this.mapper = mapper;
+    // Mapper import, basic controller
+    private final UserQueryMapper userQueryMapper;
+    public UserQueryService(UserQueryMapper userQueryMapper) {
+        this.userQueryMapper = userQueryMapper;
     }
 
     /**
-     * 직원의 정보를 전체조회하는 메서드
+     * 직원정보 전체조회하는 메서드
      * @return List<UserDto>
      */
     public List<UserDto> findAll() {
-        return mapper.findAll();
+        return userQueryMapper.findAll();
     }
 
     /**
-     * 직원의 정보를 직원아이디로 조회하는 메서드
+     * 직원정보 직원아이디로 조회하는 메서드
      * @param id string 직원아이디
      * @return UserDto
      */
     public UserDto findById(Long id) {
-        return mapper.findById(id);
+        return userQueryMapper.findById(id);
     }
 
     /**
-     * 직원의 정보를 검색조건에 따라 조회하는 메서드
+     * 직원정보 검색조건에 따라 조회하는 메서드
      * @param commonParams dto 공통파라미터
      * @return List<UserDto>
      */
-    public List<UserDto> searchUsers(CommonParams commonParams) {
-        return mapper.searchUsers(commonParams);
+    public List<UserDto> serachUserList(CommonParams commonParams) {
+        return userQueryMapper.serachUserList(commonParams);
     }
 
 }

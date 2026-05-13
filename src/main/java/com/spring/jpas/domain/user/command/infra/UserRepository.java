@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
         select max(e.userNo)
         from   User e
-        where  e.userNo like 'JPAS_%'
+        where  e.userNo like 'user%'
     """)
     String findMaxUserNo();
 

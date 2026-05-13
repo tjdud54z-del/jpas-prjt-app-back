@@ -22,7 +22,7 @@ public class UserCommandService {
 
     /** 직번 MAX 발번 */
     private String generateNextUsersNo(String currentMax) {
-        final String PREFIX = "JPAS_";
+        final String PREFIX = "user";
         final int PAD_LENGTH = 4;
 
         if (currentMax == null) {

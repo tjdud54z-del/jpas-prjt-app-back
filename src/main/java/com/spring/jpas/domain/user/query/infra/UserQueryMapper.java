@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * 직원정보에 대한 쿼리를 연동하기 위한 인터페이스
+ * 직원정보 쿼리를 연동하기 위한 인터페이스
  * @author 정서영
  * @since 2025-04-10
  * @version 1.0
@@ -34,6 +34,6 @@ public interface UserQueryMapper {
      * @param commonParams dto 공통파라미터
      * @return List<UserDto>
      */
-    List<UserDto> searchUsers(CommonParams commonParams);
+    List<UserDto> serachUserList(CommonParams commonParams);
 
 }
