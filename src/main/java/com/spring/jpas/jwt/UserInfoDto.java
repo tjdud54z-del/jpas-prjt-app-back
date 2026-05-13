@@ -11,8 +11,6 @@ public class UserInfoDto {
     private String userNo;
     private String name;
     private String email;
-    private String departmentCode;
-    private String positionCode;
     private String activeYn;
     private String logMessage;
 }

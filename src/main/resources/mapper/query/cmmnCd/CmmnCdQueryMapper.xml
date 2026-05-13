@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.jpas.domain.cmmnCd.query.infra.CmmnCdQueryMapper">
+
+    <!-- 공토코드 조회 -->
+    <select id="searchCmmnCdList"
+            parameterType="com.spring.jpas.global.common.CommonParams"
+            resultType="com.spring.jpas.domain.cmmnCd.query.dto.CmmnCdDto">
+        SELECT  CD.COMMON_CODE,
+                CD.COMMON_CODE_NAME,
+                CD.ACTIVE_YN,
+                CD.SORT_ORDER,
+                CD.DESCRIPTION,
+                CD.ATTR1,
+                CD.ATTR2,
+                CD.ATTR3,
+                CD.ATTR4,
+                CD.ATTR5,
+                CD.ATTR6,
+                CD.ATTR7,
+                CD.ATTR8,
+                CD.ATTR9,
+                CD.ATTR10,
+                CD.CREATED_AT,
+                CD.CREATED_USER_ID,
+                CD.UPDATED_AT,
+                CD.UPDATED_USER_ID
+        FROM    JPAS_DB.JPAS_TB_CMMN_CD CD
+        WHERE   1=1
+                <if test='commonCode != null and commonCode != ""'>
+                    AND CD.COMMON_CODE LIKE CONCAT('%', #{commonCode}, '%')
+                </if>
+                 <if test='commonCodeName != null and commonCodeName != ""'>
+                    AND CD.COMMON_CODE_NAME LIKE CONCAT('%', #{commonCodeName}, '%')
+                </if>
+        ORDER BY
+                CD.SORT_ORDER, CD.COMMON_CODE
+    </select>
+
+    <!-- 서브공통코드 조회 -->
+    <select id="searchCmmnCdDtlList"
+            parameterType="com.spring.jpas.global.common.CommonParams"
+            resultType="com.spring.jpas.domain.cmmnCd.query.dto.CmmnCdDto">
+        SELECT  DTL.COMMON_CODE,
+                DTL.COMMON_CODE_DTL,
+                DTL.COMMON_CODE_DTL_NAME,
+                DTL.ACTIVE_YN,
+                DTL.SORT_ORDER,
+                DTL.DESCRIPTION,
+                DTL.ATTR1,
+                DTL.ATTR2,
+                DTL.ATTR3,
+                DTL.ATTR4,
+                DTL.ATTR5,
+                DTL.ATTR6,
+                DTL.ATTR7,
+                DTL.ATTR8,
+                DTL.ATTR9,
+                DTL.ATTR10,
+                DTL.CREATED_AT,
+                DTL.CREATED_USER_ID,
+                DTL.UPDATED_AT,
+                DTL.UPDATED_USER_ID
+        FROM    JPAS_DB.JPAS_TB_CMMN_CD CD,
+                JPAS_DB.JPAS_TB_CMMN_CD_DTL DTL
+        WHERE   1=1
+                AND CD.COMMON_CODE = DTL.COMMON_CODE
+                <if test='commonCode != null and commonCode != ""'>
+                    AND DTL.COMMON_CODE = #{commonCode}
+                </if>
+                <if test='commonCodeDtl != null and commonCodeDtl != ""'>
+                    AND CD.COMMON_CODE_DTL LIKE CONCAT('%', #{commonCodeDtl}, '%')
+                </if>
+                <if test='commonCodeDtlName != null and commonCodeDtlName != ""'>
+                    AND CD.COMMON_CODE_DTL_NAME LIKE CONCAT('%', #{commonCodeDtlName}, '%')
+                </if>
+        ORDER BY
+                DTL.SORT_ORDER, DTL.COMMON_CODE
+    </select>
+
+</mapper>

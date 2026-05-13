@@ -21,9 +21,15 @@ public interface DmQueryMapper {
     );
 
     List<DmMessageRow> selectDmMessages(
-            @Param("userId") String userId,
+            @Param("userId") Long userId,
+            @Param("userNo") String userNo,
             @Param("conversationId") Long conversationId,
             @Param("size") int size,
             @Param("cursorMessageId") Long cursorMessageId
+    );
+
+    Long selectDmLastReadMessageId(
+            @Param("userId") Long userId,
+            @Param("conversationId") Long conversationId
     );
 }

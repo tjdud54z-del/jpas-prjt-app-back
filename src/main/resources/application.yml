@@ -27,7 +27,7 @@ spring:
 logging:
   level:
     root: info
-    org.springframework.web: debug
+    org.springframework.web: info
     org.mybatis: info
     org.apache.ibatis: info
     com.spring.jpas: info
