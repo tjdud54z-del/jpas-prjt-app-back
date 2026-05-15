@@ -59,6 +59,9 @@
                 U.ACTIVE_YN 	  AS ACTIVE_YN,
                 U.CREATED_AT 	  AS CREATED_AT,
                 U.GENDER_FLAG     AS GENDER_FLAG,
+                ( SELECT DTL.COMMON_CODE_DTL_NAME
+                  FROM   JPAS_DB.JPAS_TB_CMMN_CD_DTL DTL
+                  WHERE  U.GENDER_FLAG = DTL.COMMON_CODE_DTL ) AS GENDER_FLAG_NAME,
                 U.PHONE_NUMBER    AS PHONE_NUMBER
         FROM 	JPAS_TB_USER U
         WHERE 	1=1

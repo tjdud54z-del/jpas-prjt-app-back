@@ -17,5 +17,6 @@ public class UserDto {
     private String addressSub;
     private String activeYn;
     private String genderFlag;
+    private String genderFlagName;
     private String phoneNumber;
 }
