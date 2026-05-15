@@ -52,4 +52,6 @@ public class CommonParams {
     private String commonCodeDtl;
     /** 서브공통코드명 */
     private String commonCodeDtlName;
+    /** 전화번호 */
+    private String phoneNumber;
 }

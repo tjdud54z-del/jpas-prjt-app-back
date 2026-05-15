@@ -46,6 +46,7 @@ public class AuthService {
                 emp.getName(),
                 emp.getEmail(),
                 emp.getActiveYn(),
+                emp.getProfileImagePath(),
                 logMessage
         );
 

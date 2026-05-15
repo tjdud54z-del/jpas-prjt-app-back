@@ -12,5 +12,6 @@ public class UserInfoDto {
     private String name;
     private String email;
     private String activeYn;
+    private String profileImagePath;
     private String logMessage;
 }

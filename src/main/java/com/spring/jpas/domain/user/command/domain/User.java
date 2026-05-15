@@ -4,6 +4,7 @@ package com.spring.jpas.domain.user.command.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "jpas_tb_user")
 @Getter
+@Setter
 @NoArgsConstructor
 public class User {
 
@@ -61,6 +63,18 @@ public class User {
     @Column(name = "UPDATED_AT", nullable = false)
     private LocalDateTime updatedAt;
 
+    /** 성별 */
+    @Column(name = "GENDER_FLAG", nullable = false)
+    private String genderFlag;
+
+    /** 전화번호 */
+    @Column(name = "PHONE_NUMBER", nullable = false)
+    private String phoneNumber;
+
+    /** 프로필 */
+    @Column(name = "PROFILE_IMAGE_PATH")
+    private String profileImagePath;
+
     /* ===========================
        JPA Lifecycle
      =========================== */
@@ -86,7 +100,9 @@ public class User {
             String email,
             String addressMain,
             String addressSub,
-            LocalDate birthDate
+            LocalDate birthDate,
+            String genderFlag,
+            String phoneNumber
     ) {
         this.userNo = userNo;
         this.password = password;
@@ -95,6 +111,8 @@ public class User {
         this.addressMain = addressMain;
         this.addressSub = addressSub;
         this.birthDate = birthDate;
+        this.genderFlag = genderFlag;
+        this.phoneNumber = phoneNumber;
     }
 
 
@@ -106,9 +124,11 @@ public class User {
             String email,
             String addressMain,
             String addressSub,
-            LocalDate birthDate
+            LocalDate birthDate,
+            String genderFlag,
+            String phoneNumber
     ) {
-        return new User(userNo, password, name, email, addressMain, addressSub, birthDate);
+        return new User(userNo, password, name, email, addressMain, addressSub, birthDate, genderFlag, phoneNumber);
     }
 
     /* update 도메인 메서드 */
@@ -118,7 +138,9 @@ public class User {
             String email,
             String addressMain,
             String addressSub,
-            LocalDate birthDate
+            LocalDate birthDate,
+            String genderFlag,
+            String phoneNumber
     ) {
         this.password = password;
         this.name = name;
@@ -126,6 +148,8 @@ public class User {
         this.addressMain = addressMain;
         this.addressSub = addressSub;
         this.birthDate = birthDate;
+        this.genderFlag = genderFlag;
+        this.phoneNumber = phoneNumber;
     }
 
 

@@ -5,6 +5,7 @@ import com.spring.jpas.domain.user.command.application.UserCommandService;
 import com.spring.jpas.global.common.CommonParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/jpa/users")
@@ -13,19 +14,17 @@ public class UserCommandController {
 
     private final UserCommandService userCommandService;
 
-    /** 직원 등록 */
+    /** 유저 등록 */
     @PostMapping
-    public Long saveUser(@RequestBody CommonParams params) {
-        return userCommandService.saveUser(params);
-    }
+    public Long saveUser(@RequestBody CommonParams params) { return userCommandService.saveUser(params); }
 
-    /** 직원 수정 */
+    /** 유저 수정 */
     @PutMapping
     public void updateUser(@RequestBody CommonParams params) {
         userCommandService.updateUser(params);
     }
 
-    /** 직원 삭제 (다건) */
+    /** 유저 삭제 (다건) */
     @DeleteMapping
     public void deleteUsers(@RequestBody CommonParams params) {
         userCommandService.deleteUsers(params);
@@ -38,5 +37,13 @@ public class UserCommandController {
     /** 복구 */
     @PutMapping("/restore")
     public void restore(@RequestBody CommonParams params) { userCommandService.restoreUsers(params.getUserIds()); }
+
+
+    /** 프로필 이미지 업로드 */
+    @PostMapping("/upload-profile")
+    public String uploadProfileImage(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+        return userCommandService.saveProfileImage(file, userId);
+    }
+
 
 }
