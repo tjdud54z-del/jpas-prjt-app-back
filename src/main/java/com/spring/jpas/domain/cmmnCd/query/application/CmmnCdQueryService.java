@@ -40,4 +40,13 @@ public class CmmnCdQueryService {
         return cmmnCdQueryMapper.searchCmmnCdDtlList(commonParams);
     }
 
+    /**
+     * selectbox의 값과 명의 정보 공통코드에 따라 조회
+     * @param commonParams dto 공통파라미터
+     * @return List<CmmnCdDto>
+     */
+    public List<CmmnCdDto> searchCmmnCdSelectOption(CommonParams commonParams) {
+        return cmmnCdQueryMapper.searchCmmnCdSelectOption(commonParams);
+    }
+
 }

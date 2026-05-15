@@ -26,8 +26,10 @@
                 CD.ATTR10,
                 CD.CREATED_AT,
                 CD.CREATED_USER_ID,
+                (SELECT U.NAME FROM JPAS_DB.JPAS_TB_USER U WHERE CD.CREATED_USER_ID = U.USER_ID) AS CREATED_USER_NAME,
                 CD.UPDATED_AT,
-                CD.UPDATED_USER_ID
+                CD.UPDATED_USER_ID,
+                (SELECT U.NAME FROM JPAS_DB.JPAS_TB_USER U WHERE CD.UPDATED_USER_ID = U.USER_ID) AS UPDATED_USER_NAME
         FROM    JPAS_DB.JPAS_TB_CMMN_CD CD
         WHERE   1=1
                 <if test='commonCode != null and commonCode != ""'>
@@ -60,10 +62,11 @@
                 DTL.ATTR8,
                 DTL.ATTR9,
                 DTL.ATTR10,
-                DTL.CREATED_AT,
                 DTL.CREATED_USER_ID,
+                (SELECT U.NAME FROM JPAS_DB.JPAS_TB_USER U WHERE DTL.CREATED_USER_ID = U.USER_ID) AS CREATED_USER_NAME,
                 DTL.UPDATED_AT,
-                DTL.UPDATED_USER_ID
+                DTL.UPDATED_USER_ID,
+                (SELECT U.NAME FROM JPAS_DB.JPAS_TB_USER U WHERE DTL.UPDATED_USER_ID = U.USER_ID) AS UPDATED_USER_NAME
         FROM    JPAS_DB.JPAS_TB_CMMN_CD CD,
                 JPAS_DB.JPAS_TB_CMMN_CD_DTL DTL
         WHERE   1=1
@@ -76,6 +79,25 @@
                 </if>
                 <if test='commonCodeDtlName != null and commonCodeDtlName != ""'>
                     AND CD.COMMON_CODE_DTL_NAME LIKE CONCAT('%', #{commonCodeDtlName}, '%')
+                </if>
+        ORDER BY
+                DTL.SORT_ORDER, DTL.COMMON_CODE
+    </select>
+
+    <!-- selectbox용 데이터 조회 -->
+    <select id="searchCmmnCdSelectOption"
+            parameterType="com.spring.jpas.global.common.CommonParams"
+            resultType="com.spring.jpas.domain.cmmnCd.query.dto.CmmnCdSelectOption">
+        SELECT  DTL.COMMON_CODE_DTL      AS VALUE,
+                DTL.COMMON_CODE_DTL_NAME AS LABEL
+        FROM    JPAS_DB.JPAS_TB_CMMN_CD CD,
+                JPAS_DB.JPAS_TB_CMMN_CD_DTL DTL
+        WHERE   1=1
+                AND CD.COMMON_CODE = DTL.COMMON_CODE
+                AND CD.ACTIVE_YN = 'Y'
+                AND DTL.ACTIVE_YN = 'Y'
+                <if test='commonCode != null and commonCode != ""'>
+                    AND DTL.COMMON_CODE = #{commonCode}
                 </if>
         ORDER BY
                 DTL.SORT_ORDER, DTL.COMMON_CODE

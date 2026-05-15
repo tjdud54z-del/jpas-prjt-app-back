@@ -16,7 +16,6 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class CmmnCdCommandService {
 
-
     private final CmmnCdRepository repository;
     private final CmmnCdDtlRepository subRepository;
 

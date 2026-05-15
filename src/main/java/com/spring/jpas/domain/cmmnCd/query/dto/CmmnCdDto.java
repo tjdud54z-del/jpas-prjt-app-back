@@ -29,9 +29,11 @@ public class CmmnCdDto {
     private String attr9;
     private String attr10;
 
-    private LocalDateTime createdAt;
     private Long createdUserId;
-    private LocalDateTime updatedAt;
+    private String createdUserName;
+    private LocalDateTime createdAt;
     private Long updatedUserId;
+    private String updatedUserName;
+    private LocalDateTime updatedAt;
 
 }
